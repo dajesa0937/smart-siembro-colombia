@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../lib/store';
-import { CalendarStrip, Disclaimer, Tabs, Tip, TopBar } from '../components/ui';
+import { CalendarStrip, CropWarning, Disclaimer, Tabs, Tip, TopBar } from '../components/ui';
 import { CROPS, getCrop } from '../data/crops';
 import { MONTHS, MONTHS_LONG, REGIME_LABEL, fincaAlerts, rainIndex, rankCrops, sowingCalendar, sowingWindows, tempFromAlt } from '../lib/engine';
 import { useHistorical } from '../lib/hooks';
@@ -28,7 +28,8 @@ export function Calendar() {
         {tab === 'cultivo' && (
           <>
             <select value={cropId} onChange={(e) => setCropId(e.target.value)} aria-label="Cultivo">{CROPS.map((c) => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}</select>
-            <div className="card" style={{ marginTop: 12 }}>
+            <div style={{ marginTop: 12 }}><CropWarning crop={crop} finca={finca} /></div>
+            <div className="card">
               <h2>Calendario de siembra</h2>
               <div className="mute small">Zona: {finca.name} ({finca.alt} msnm)</div>
               <CalendarStrip cal={cal} nowMonth={now} />

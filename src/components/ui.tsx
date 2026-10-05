@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react';
 import { back, go } from '../lib/router';
 import { useOnline } from '../lib/online';
-import { MONTHS, type MonthStatus } from '../lib/engine';
+import { MONTHS, evaluateCrop, type MonthStatus } from '../lib/engine';
+import type { Crop, Finca } from '../lib/types';
 import { PHOTOS } from '../data/photos';
 
 export function NetBadge() {
@@ -115,3 +116,21 @@ export const verdictBadge = (v: string) => {
 export const Disclaimer = () => (
   <p className="disclaimer">Información orientativa basada en referencias técnicas (FAO, Agrosavia, IDEAM, IGAC, universidades). No reemplaza la asesoría de un ingeniero agrónomo, el análisis de suelo ni la etiqueta de los productos registrados ante el ICA.</p>
 );
+
+/** Aviso en cualquier pantalla donde se elige un cultivo: no sembrar / con condiciones / baja rentabilidad. */
+export function CropWarning({ crop, finca }: { crop: Crop; finca: Finca }) {
+  const e = evaluateCrop(crop, finca);
+  if (e.verdict === 'no-recomendado') {
+    return (
+      <div className="card alert rojo" role="alert">
+        <b>⛔ No se recomienda sembrar {crop.name.toLowerCase()} en su finca</b>
+        <ul className="clean small">{e.reasons.slice(0, 4).map((r, i) => <li key={i}>{r}</li>)}</ul>
+        <a className="link" href={'#/cultivos'}>Ver cultivos que sí le convienen</a>
+      </div>
+    );
+  }
+  if (e.verdict === 'condicionado') {
+    return <div className="card alert" role="alert"><b>⚠ {crop.name}: siembre solo con precauciones</b><ul className="clean small">{e.reasons.slice(0, 3).map((r, i) => <li key={i}>{r}</li>)}</ul></div>;
+  }
+  return null;
+}
